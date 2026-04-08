@@ -1,0 +1,37 @@
+private Bitmap JadikanBinerInvesi(Bitmap src)
+{
+
+    Bitmap b = new Bitmap(src.Width, src.Height);
+    Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
+    System.Drawing.Imaging.BitmapData bmSrc = src.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+    System.Drawing.Imaging.BitmapData bmDst = b.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+    int stride = bmSrc.Stride;
+    unsafe
+    {
+        byte* pSrc = (byte*)bmSrc.Scan0;
+        byte* pDst = (byte*)bmDst.Scan0;
+
+        for (int y = 0; y < src.Height; y++)
+        {
+            for (int x = 0; x < src.Width; x++)
+            {
+                byte* srcPixel = pSrc + y * stride + x * 3;
+                byte* dstPixel = pDst + y * stride + x * 3;
+
+                int gray = (srcPixel[0] + srcPixel[1] + srcPixel[2]) / 3;
+
+                byte nilaiBiner = (byte)(gray < 120 ? 255 : 0);
+
+                dstPixel[0] = nilaiBiner;
+                dstPixel[1] = nilaiBiner;
+                dstPixel[2] = nilaiBiner;
+            }
+        }
+
+    }
+    src.UnlockBits(bmSrc);
+    b.UnlockBits(bmDst);
+    return b;
+
+}
